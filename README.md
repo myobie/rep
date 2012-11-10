@@ -53,7 +53,12 @@ Or install it yourself as:
 ## Usage
 
 `include Rep` into any class and it is endowed with a `#to_json` method,
-among other things.
+among other things. You describe the top level keys you want for your
+json with the `::fields` method. The values for the fields are expected
+to be returned from methods on the object of the same name.
+
+If a class has `fields :one => :default`, then `def one; 1; end` is
+expected.
 
 ## Examples
 
