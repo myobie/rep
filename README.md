@@ -70,7 +70,7 @@ class PhotoRep
 
   initialize_with :photo
 
-  json_fields [:url, :title, :exif, :location, :user] => :default
+  fields [:url, :title, :exif, :location, :user] => :default
 
   forward [:title, :exif, :location] => :photo
   forward :user => :user_rep
@@ -91,10 +91,10 @@ class UserRep
 
   initialize_with :user
 
-  json_fields [:name, :email, :location] => :default
-  json_fields [:id, :admin].concat(json_fields(:default)) => :admin
+  fields [:name, :email, :location] => :default
+  fields [:id, :admin].concat(fields(:default)) => :admin
 
-  forward json_fields(:admin) => :user
+  forward fields(:admin) => :user
 end
 
 # You can now do crazy stuff like
@@ -118,7 +118,7 @@ You don't have to have a Rep per model and Rep's can represent multiple objects 
 ```ruby
 class ProjectReport
   initialize_with :project, :active_users, :orders
-  fields [:name, :date, :count, :total_gross_cost, :cost_per_active_user]
+  fields [:name, :date, :count, :total_gross_cost, :cost_per_active_user] => :default
   forward :date => :project
   forward :count => :orders
 
