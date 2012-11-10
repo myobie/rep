@@ -40,7 +40,7 @@ A library for writing authoritative representations of objects for pages and api
 
 Add this line to your application's Gemfile:
 
-    gem 'representative'
+    gem 'rep'
 
 And then execute:
 
@@ -48,7 +48,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install representative
+    $ gem install rep
 
 ## Usage
 
