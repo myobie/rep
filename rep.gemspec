@@ -8,8 +8,8 @@ Gem::Specification.new do |gem|
   gem.version       = Rep::VERSION
   gem.authors       = ["myobie"]
   gem.email         = ["nathan@myobie.com"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
+  gem.description   = %q{A library for writing authoritative representations of objects for pages and apis.}
+  gem.summary       = %q{Include Rep into any object to endow it to create json (or hashes) easily.}
   gem.homepage      = ""
 
   gem.files         = `git ls-files`.split($/)
