@@ -140,7 +140,7 @@ module Rep
       # must negotiate Hashes and use the first key of the hash for the `attr_accessor`'s name.
 
       define_method :parse_opts do |opts|
-        @presidential_options = opts
+        @rep_options = opts
         self.class.initializiation_args.each do |field|
           name = field.is_a?(Hash) ? field.to_a.first.first : field
           instance_variable_set(:"@#{name}", opts[name])
