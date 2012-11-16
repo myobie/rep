@@ -4,8 +4,8 @@
 # 2. Providing a convention for the value of those keys
 # 3. Defining `attr_accessor`'s that are prefilled from an options hash given to `#initialize`
 # 4. Sharing instances to help GC
-
-require 'rep/version'
+#
+# The code is available on [github](http://github.com/myobie/rep).
 
 # `Forwardable` is in the stdlib and allows ruby objects to delegate methods off to other objects. An example:
 #
@@ -26,6 +26,7 @@ require 'forwardable'
 
 require 'json'
 
+require 'rep/version'
 module Rep
 
   # All classes that `include Rep` are extended with `Forwardable`,
