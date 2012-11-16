@@ -1,4 +1,11 @@
-require "rep/version"
+# **Rep** is a small module to endow any class to make json quickly. It solves four problems:
+#
+# * Enumerating top level keys for a json structure
+# * Providing a convention for the value of those keys
+# * Defining attr_accessor's that are prefilled from an options hash given to #initialize
+# * Sharing instances to help GC
+
+require 'rep/version'
 require 'forwardable'
 require 'json'
 

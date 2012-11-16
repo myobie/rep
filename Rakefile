@@ -1,4 +1,5 @@
 require "bundler/gem_tasks"
+
 require 'rake/testtask'
 Rake::TestTask.new do |t|
   t.libs << 'test'
@@ -6,3 +7,8 @@ Rake::TestTask.new do |t|
   t.verbose = true
 end
 task default: 'test'
+
+require 'rdiscount'
+require 'rocco/tasks'
+desc "Build Rocco Docs"
+Rocco::make 'docs/'
