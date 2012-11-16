@@ -8,7 +8,16 @@ Rake::TestTask.new do |t|
 end
 task default: 'test'
 
+require 'fileutils'
 require 'rdiscount'
 require 'rocco/tasks'
 desc "Build Rocco Docs"
-Rocco::make 'docs/'
+Rocco::make 'docs'
+
+
+task :copy_to_index do
+  `cp -R docs/lib/* docs/`
+  `cp docs/rep.html docs/index.html`
+end
+
+task :docs => [:rocco, :copy_to_index]

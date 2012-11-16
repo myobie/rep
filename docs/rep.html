@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>rep.rb</title>
+  <link rel="stylesheet" href="http://jashkenas.github.com/docco/resources/docco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div id="jump_to">
+    Jump To &hellip;
+    <div id="jump_wrapper">
+      <div id="jump_page">
+          <a class="source" href="rep.html">rep.rb</a>
+          <a class="source" href="rep/version.html">version.rb</a>
+      </div>
+    </div>
+  </div>
+  <table cellspacing=0 cellpadding=0>
+  <thead>
+    <tr>
+      <th class=docs><h1>rep.rb</h1></th>
+      <th class=code></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-1'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-1">&#182;</a>
+        </div>
+        <p><strong>Rep</strong> is a small module to endow any class to make json quickly. It solves four problems:</p>
+
+<ul>
+<li>Enumerating top level keys for a json structure</li>
+<li>Providing a convention for the value of those keys</li>
+<li>Defining attr_accessor&rsquo;s that are prefilled from an options hash given to #initialize</li>
+<li>Sharing instances to help GC</li>
+</ul>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="nb">require</span> <span class="s1">&#39;rep/version&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;forwardable&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;json&#39;</span>
+
+<span class="k">module</span> <span class="nn">Rep</span>
+  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">klass</span><span class="p">)</span>
+    <span class="n">klass</span><span class="o">.</span><span class="n">extend</span> <span class="no">Forwardable</span>
+    <span class="n">klass</span><span class="o">.</span><span class="n">extend</span> <span class="no">ClassMethods</span>
+    <span class="n">klass</span><span class="o">.</span><span class="n">instance_eval</span> <span class="p">{</span>
+      <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+        <span class="k">alias</span> <span class="n">forward</span> <span class="n">delegate</span>
+
+        <span class="k">unless</span> <span class="n">defined?</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
+          <span class="k">alias</span> <span class="n">fields</span> <span class="n">json_fields</span>
+        <span class="k">end</span>
+
+        <span class="k">if</span> <span class="n">defined?</span><span class="p">(</span><span class="no">Hashie</span><span class="p">)</span>
+          <span class="kp">include</span> <span class="no">HashieSupport</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+
+      <span class="k">unless</span> <span class="n">defined?</span><span class="p">(</span><span class="n">parse_opts</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">parse_opts</span><span class="p">(</span><span class="n">opts</span> <span class="o">=</span> <span class="p">{})</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-2'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-2">&#182;</a>
+        </div>
+        <p>NOOP</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>        <span class="k">end</span>
+      <span class="k">end</span>
+    <span class="p">}</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">reset_for_json!</span>
+    <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">all_json_methods</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">method_name</span><span class="o">|</span>
+      <span class="nb">instance_variable_set</span><span class="p">(</span><span class="ss">:&quot;@</span><span class="si">#{</span><span class="n">method_name</span><span class="si">}</span><span class="ss">&quot;</span><span class="p">,</span> <span class="kp">nil</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">to_hash</span><span class="p">(</span><span class="nb">name</span> <span class="o">=</span> <span class="ss">:default</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fields</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">json_fields</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+      <span class="n">fields</span><span class="o">.</span><span class="n">reduce</span><span class="p">({})</span> <span class="k">do</span> <span class="o">|</span><span class="n">memo</span><span class="p">,</span> <span class="n">field</span><span class="o">|</span>
+        <span class="n">field_name</span><span class="p">,</span> <span class="n">method_name</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Hash</span><span class="p">)</span> <span class="p">?</span> <span class="n">field</span><span class="o">.</span><span class="n">to_a</span><span class="o">.</span><span class="n">first</span> <span class="p">:</span> <span class="o">[</span><span class="n">field</span><span class="p">,</span> <span class="n">field</span><span class="o">]</span>
+        <span class="k">begin</span>
+          <span class="n">memo</span><span class="o">[</span><span class="n">field_name</span><span class="o">]</span> <span class="o">=</span> <span class="nb">send</span><span class="p">(</span><span class="n">method_name</span><span class="p">)</span>
+        <span class="k">rescue</span> <span class="no">NoMethodError</span> <span class="o">=&gt;</span> <span class="n">e</span>
+          <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;There is no method named &#39;</span><span class="si">#{</span><span class="n">method_name</span><span class="si">}</span><span class="s2">&#39; for the class &#39;</span><span class="si">#{</span><span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="si">}</span><span class="s2">&#39; for the &#39;</span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2">&#39; list of fields : </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+          <span class="k">raise</span> <span class="no">NoMethodError</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">end</span>
+        <span class="n">memo</span>
+      <span class="k">end</span>
+    <span class="k">else</span>
+      <span class="k">raise</span> <span class="s2">&quot;There are no json fields under the name: </span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">to_json</span>
+    <span class="no">JSON</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">to_hash</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="k">module</span> <span class="nn">ClassMethods</span>
+    <span class="k">def</span> <span class="nf">register_accessor</span><span class="p">(</span><span class="n">acc</span><span class="p">)</span>
+      <span class="nb">name</span><span class="p">,</span> <span class="n">default</span> <span class="o">=</span> <span class="n">acc</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Hash</span><span class="p">)</span> <span class="p">?</span> <span class="n">acc</span><span class="o">.</span><span class="n">to_a</span><span class="o">.</span><span class="n">first</span> <span class="p">:</span> <span class="o">[</span><span class="n">acc</span><span class="p">,</span> <span class="kp">nil</span><span class="o">]</span>
+      <span class="kp">attr_accessor</span> <span class="nb">name</span>
+      <span class="k">if</span> <span class="n">default</span>
+        <span class="n">define_method</span> <span class="nb">name</span> <span class="k">do</span>
+          <span class="n">var_name</span> <span class="o">=</span> <span class="ss">:&quot;@</span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="ss">&quot;</span>
+          <span class="nb">instance_variable_get</span><span class="p">(</span><span class="n">var_name</span><span class="p">)</span> <span class="o">||</span> <span class="nb">instance_variable_set</span><span class="p">(</span><span class="n">var_name</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">initialize_with</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+      <span class="vi">@initializiation_args</span> <span class="o">=</span> <span class="n">args</span>
+
+      <span class="n">define_singleton_method</span> <span class="ss">:initializiation_args</span> <span class="k">do</span>
+        <span class="vi">@initializiation_args</span>
+      <span class="k">end</span>
+
+      <span class="n">args</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">a</span><span class="o">|</span> <span class="n">register_accessor</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="p">}</span>
+
+      <span class="n">define_method</span><span class="p">(</span><span class="ss">:initialize</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">opts</span> <span class="o">=</span> <span class="p">{}</span><span class="o">|</span> <span class="n">parse_opts</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span> <span class="p">}</span>
+
+      <span class="n">define_method</span> <span class="ss">:parse_opts</span> <span class="k">do</span> <span class="o">|</span><span class="n">opts</span><span class="o">|</span>
+        <span class="vi">@presidential_options</span> <span class="o">=</span> <span class="n">opts</span>
+        <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">initializiation_args</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">field</span><span class="o">|</span>
+          <span class="nb">name</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Hash</span><span class="p">)</span> <span class="p">?</span> <span class="n">field</span><span class="o">.</span><span class="n">to_a</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">first</span> <span class="p">:</span> <span class="n">field</span>
+          <span class="nb">instance_variable_set</span><span class="p">(</span><span class="ss">:&quot;@</span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="ss">&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="o">[</span><span class="nb">name</span><span class="o">]</span><span class="p">)</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">json_fields</span><span class="p">(</span><span class="n">arg</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">)</span>
+      <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Hash</span><span class="p">)</span>
+        <span class="n">fields</span><span class="p">,</span> <span class="nb">name</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">to_a</span><span class="o">.</span><span class="n">first</span>
+        <span class="vi">@json_fields</span> <span class="o">||=</span> <span class="p">{}</span>
+        <span class="vi">@json_fields</span><span class="o">[</span><span class="nb">name</span><span class="o">]</span> <span class="o">=</span> <span class="o">[</span><span class="n">fields</span><span class="o">].</span><span class="n">flatten</span>
+      <span class="k">elsif</span> <span class="n">arg</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Symbol</span><span class="p">)</span>
+        <span class="vi">@json_fields</span> <span class="o">||=</span> <span class="p">{}</span>
+        <span class="vi">@json_fields</span><span class="o">[</span><span class="n">arg</span><span class="o">]</span>
+      <span class="k">elsif</span> <span class="n">arg</span> <span class="o">===</span> <span class="kp">nil</span>
+        <span class="vi">@json_fields</span> <span class="o">||</span> <span class="p">{}</span>
+      <span class="k">else</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-3'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-3">&#182;</a>
+        </div>
+        <p>TODO: make an exception class</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>        <span class="k">raise</span> <span class="s2">&quot;You can only use a Hash to set fields, a Symbol to retrieve them, or no argument to retrieve all fields for all names&quot;</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">flat_json_fields</span><span class="p">(</span><span class="n">side</span> <span class="o">=</span> <span class="ss">:right</span><span class="p">)</span>
+      <span class="n">side_number</span> <span class="o">=</span> <span class="n">side</span> <span class="o">==</span> <span class="ss">:right</span> <span class="p">?</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">0</span>
+
+      <span class="n">json_fields</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="o">[]</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">memo</span><span class="p">,</span> <span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span><span class="o">|</span>
+        <span class="n">memo</span> <span class="o">+</span> <span class="n">fields</span><span class="o">.</span><span class="n">map</span> <span class="k">do</span> <span class="o">|</span><span class="n">field</span><span class="o">|</span>
+          <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Hash</span><span class="p">)</span>
+            <span class="n">field</span><span class="o">.</span><span class="n">to_a</span><span class="o">.</span><span class="n">first</span><span class="o">[</span><span class="n">side_number</span><span class="o">]</span> <span class="c1"># [name, method_name]</span>
+          <span class="k">else</span>
+            <span class="n">field</span>
+          <span class="k">end</span>
+        <span class="k">end</span>
+      <span class="k">end</span><span class="o">.</span><span class="n">uniq</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">all_json_fields</span>
+      <span class="n">flat_json_fields</span><span class="p">(</span><span class="ss">:left</span><span class="p">)</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">all_json_methods</span>
+      <span class="n">flat_json_fields</span><span class="p">(</span><span class="ss">:right</span><span class="p">)</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-4'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-4">&#182;</a>
+        </div>
+        <p>TODO: thread safety</p>
+
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">shared</span><span class="p">(</span><span class="n">opts</span> <span class="o">=</span> <span class="p">{})</span>
+      <span class="vi">@instance</span> <span class="o">||=</span> <span class="kp">new</span>
+      <span class="vi">@instance</span><span class="o">.</span><span class="n">reset_for_json!</span>
+      <span class="vi">@instance</span><span class="o">.</span><span class="n">parse_opts</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
+      <span class="vi">@instance</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">to_proc</span>
+      <span class="nb">proc</span> <span class="p">{</span> <span class="o">|</span><span class="n">obj</span><span class="o">|</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="o">[</span><span class="n">obj</span><span class="o">].</span><span class="n">flatten</span>
+        <span class="n">init_args</span> <span class="o">=</span> <span class="vi">@initializiation_args</span><span class="o">[</span><span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">length</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">]</span>
+        <span class="n">opts</span> <span class="o">=</span> <span class="no">Hash</span><span class="o">[</span><span class="n">init_args</span><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span><span class="o">]</span>
+        <span class="n">shared</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span><span class="o">.</span><span class="n">to_hash</span>
+      <span class="p">}</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+  <span class="k">module</span> <span class="nn">HashieSupport</span>
+    <span class="k">def</span> <span class="nf">to_hash</span><span class="p">(</span><span class="nb">name</span> <span class="o">=</span> <span class="ss">:default</span><span class="p">)</span>
+      <span class="no">Hashie</span><span class="o">::</span><span class="no">Mash</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="k">super</span><span class="p">)</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></pre></div>
+      </td>
+    </tr>
+  </table>
+</div>
+</body>
