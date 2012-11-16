@@ -52,13 +52,7 @@ Or install it yourself as:
 
 ## Usage
 
-`include Rep` into any class and it is endowed with a `#to_json` method,
-among other things. You describe the top level keys you want for your
-json with the `::fields` method. The values for the fields are expected
-to be returned from methods on the object of the same name.
-
-If a class has `fields :one => :default`, then `def one; 1; end` is
-expected.
+`include Rep` into any class. See [nathanherald.com/rep](http://nathanherald.com/rep) for complete docs on every method.
 
 ## Examples
 
@@ -98,13 +92,12 @@ class UserRep
 end
 
 # You can now do crazy stuff like
-
 UserRep.new(user: User.first).to_hash.keys # => [:name, :email, :location]
 
 # To save from creating lots of objects, you can use a shared class that is reset fresh
 UserRep.shared(user: User.first).to_hash # => { name: "Nathan Herald:, ...
 
-# You can use class to proc (that makes a hash using the shared class)
+# You can use class to proc (that makes a hash using the shared instance)
 User.all.map(&UserRep) # => [{ name: "Nathan Herald" ...
 
 # or maybe find all photos which will embed all users (and only ever make one instance each of PhotoRep and UserRep)

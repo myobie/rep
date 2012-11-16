@@ -29,10 +29,8 @@ require 'json'
 module Rep
 
   # All classes that `include Rep` are extended with `Forwardable`,
-  # given an alias `forward` for `delegate` (because it sounds better),
-  # an alias `fields` for `json_fields` unless it's already defined (because it sounds better),
-  # include `HashieSupport` which wraps all return values from `#to_hash` with `Hashie::Mash`,
-  # and setup an empty `parse_opts` if there is not already one which is used for shared instances so that options can be parsed without going through `#initialize`.
+  # given some aliases, endowned with `HashieSupport` if Hashie is loaded,
+  # and setup an empty `#parse_opts` because it is required for `::shared`.
 
   def self.included(klass)
     klass.extend Forwardable
@@ -58,7 +56,8 @@ module Rep
 
   # Since a goal is to be able to share instances, we need an easy way to reset a
   # shared instance back to factory defaults. If you memoize any methods that are
-  # not declared as json fields, then overried this method and super.
+  # not declared as json fields, then overried this method and set any memoized
+  # variables to nil, then super.
 
   def reset_for_json!
     self.class.all_json_methods.each do |method_name|
@@ -67,10 +66,13 @@ module Rep
   end
 
   # All the work of generating a hash from an instance is packaged up in one method. Since
-  # fields can be aliases themselves in the format { :json_key_name => :method_name }, there
+  # fields can be aliases in the format `{ :json_key_name => :method_name }`, there
   # is some fancy logic to determine the `field_name` and `method_name` variables.
   #
-  # { :one => :foo }.to_a => [[:one, :foo]]
+  #     { :one => :foo }.to_a # => [[:one, :foo]]
+  #
+  # Right now it will raise if either a field doesn't have a method to provide it's value or
+  # if there are no json fields setup for the particular set (which defaults to `:default`).
 
   def to_hash(name = :default)
     if fields = self.class.json_fields(name)
@@ -88,8 +90,6 @@ module Rep
       raise "There are no json fields under the name: #{name}"
     end
   end
-
-  # `#to_json` is only for compatability. Use `JSON::generate` instead of delegating to the hash object's `#to_json` because I don't trust it.
 
   def to_json
     JSON.generate(to_hash)
@@ -117,8 +117,8 @@ module Rep
     end
 
     # Defines an `#initialize` method that accepts a Hash argument and copies some keys out into `attr_accessors`.
-    # If your class already has an `#iniatialize` method then this will overwrite it. `#initialize_with` does not have to be used
-    # to use any other parts of Rep.
+    # If your class already has an `#iniatialize` method then this will overwrite it (so don't use it). `#initialize_with`
+    # does not have to be used to use any other parts of Rep.
 
     def initialize_with(*args)
       @initializiation_args = args
@@ -132,8 +132,6 @@ module Rep
       # Create an `attr_accessor` for each one. Defaults can be provided using the Hash version { :arg => :default_value }
 
       args.each { |a| register_accessor(a) }
-
-      # `#initialize` only parses the options
 
       define_method(:initialize) { |opts = {}| parse_opts(opts) }
 
@@ -191,6 +189,9 @@ module Rep
       end
     end
 
+    # `#flat_json_fields` is just a utility method to DRY up the next two methods, because their code is almost exactly the same,
+    # it is not intended for use directly and might be confusing.
+
     def flat_json_fields(side = :right)
       side_number = side == :right ? 1 : 0
 
@@ -205,21 +206,72 @@ module Rep
       end.uniq
     end
 
+    # We need a way to get a flat, uniq'ed list of all the fields accross all field sets. This is that.
+
     def all_json_fields
       flat_json_fields(:left)
     end
+
+    # We need a wya to get a flat, uniq'ed list of all the method names accross all field sets. This is that.
 
     def all_json_methods
       flat_json_fields(:right)
     end
 
-    # TODO: thread safety
+    # An easy way to save on GC is to use the same instance to turn an array of objects into hashes instead
+    # of instantiating a new object for every object in the array. However, **this is currently not threadsafe**
+    # and you have been warned. Once I figure out how to test threadsafe code in a reliable way, this will get
+    # addressed. Here is an example of it's usage:
+    #
+    #     class BookRep
+    #       initialize_with :book_model
+    #       fields :title => :default
+    #       forward :title => :book_model
+    #     end
+    #
+    #     BookRep.shared(:book_model => Book.first).to_hash # => { :title => "Moby Dick" }
+    #     BookRep.shared(:book_model => Book.last).to_hash  # => { :title => "Lost Horizon" }
+
     def shared(opts = {})
       @instance ||= new
       @instance.reset_for_json!
       @instance.parse_opts(opts)
       @instance
     end
+
+    # The fanciest thing in this entire library is this `#to_proc` method. Here is an example of it's usage:
+    #
+    #     class BookRep
+    #       initialize_with :book_model
+    #       fields :title => :default
+    #       forward :title => :book_model
+    #     end
+    #
+    #     Book.all.map(&BookRep) # => [{ :title => "Moby Dick" }, { :title => "Lost Horizon " }]
+    #
+    # And now I will explain how it works. Any object can have a to_proc method and when you call `#map` on an
+    # array and hand it a proc it will in turn hand each object as an argument to that proc. What I've decided
+    # to do with this object is use it the options for a shared instance to make a hash.
+    #
+    # Since I know the different initialization argumants from a call to `initialize_with`, I can infer by order
+    # which object is which option. Then I can create a Hash to give to `parse_opts` through the `shared` method.
+    # I hope that makes sense.
+    #
+    # It allows for extremely clean Rails controllers like this:
+    #
+    #     class PhotosController < ApplicationController
+    #       respond_to :json, :html
+    #
+    #       def index
+    #         @photos = Photo.paginate(page: params[:page], per_page: 20)
+    #         respond_with @photos.map(&PhotoRep)
+    #       end
+    #
+    #       def show
+    #         @photo = Photo.find(params[:id])
+    #         respond_with PhotoRep.new(photo: @photo)
+    #       end
+    #     end
 
     def to_proc
       proc { |obj|
