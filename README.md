@@ -117,6 +117,7 @@ You don't have to have a Rep per model and Rep's can represent multiple objects 
 
 ```ruby
 class ProjectReport
+  include Rep
   initialize_with :project, :active_users, :orders
   fields [:name, :date, :count, :total_gross_cost, :cost_per_active_user] => :default
   forward :date => :project
