@@ -55,7 +55,7 @@ describe Rep do
     klass = new_rep_class do
       initialize_with :foo, { :bar => "barbar" }
     end
-    inst = klass.new(bar: 'notbar')
+    inst = klass.new(:bar => 'notbar')
     inst.bar.must_equal 'notbar'
     inst.foo.must_be_nil
   end
