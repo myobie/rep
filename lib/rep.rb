@@ -134,7 +134,10 @@ module Rep
 
       args.each { |a| register_accessor(a) }
 
-      define_method(:initialize) { |opts = {}| parse_opts(opts) }
+      define_method(:initialize) { |*args|
+        opts = args.first || {}
+        parse_opts(opts)
+      }
 
       # `#parse_opts` is responsable for getting the `attr_accessor` values prefilled. Since defaults can be specified, it
       # must negotiate Hashes and use the first key of the hash for the `attr_accessor`'s name.
