@@ -130,8 +130,13 @@ module Rep
 
       # Remember what args we normally initialize with so we can refer to them when building shared instances.
 
-      define_singleton_method :initializiation_args do
-        @initializiation_args
+      if defined?(define_singleton_method)
+        define_singleton_method :initializiation_args do
+          @initializiation_args
+        end
+      else
+        singleton = class << self; self end
+        singleton.send :define_method, :initializiation_args, lambda { @initializiation_args }
       end
 
       # Create an `attr_accessor` for each one. Defaults can be provided using the Hash version { :arg => :default_value }
