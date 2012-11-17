@@ -22,4 +22,4 @@ end
 
 task :docs => [:rocco, :copy_to_index]
 
-task default: 'test'
+task :default => 'test'
