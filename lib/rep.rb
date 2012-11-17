@@ -38,6 +38,14 @@ module Rep
     klass.extend ClassMethods
     klass.instance_eval {
       class << self
+        unless defined?(delegate)
+          def self.delegate(opts = {})
+            methods, object_name = opts.to_a.first
+            args = [object_name, methods].flatten
+            def_delegators *args
+          end
+        end
+
         alias forward delegate
 
         unless defined?(fields)
