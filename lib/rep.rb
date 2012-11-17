@@ -31,7 +31,7 @@ module Rep
 
   # All classes that `include Rep` are extended with `Forwardable`,
   # given some aliases, endowned with `HashieSupport` if Hashie is loaded,
-  # and setup an empty `#parse_opts` because it is required for `::shared`.
+  # and given a delegate method if it doesn't already have one.
 
   def self.included(klass)
     klass.extend Forwardable
@@ -39,7 +39,7 @@ module Rep
     klass.instance_eval {
       class << self
         unless defined?(delegate)
-          def self.delegate(opts = {})
+          def delegate(opts = {})
             methods, object_name = opts.to_a.first
             args = [object_name, methods].flatten
             def_delegators *args
@@ -55,10 +55,6 @@ module Rep
         if defined?(Hashie)
           include HashieSupport
         end
-      end
-
-      unless defined?(parse_opts)
-        def parse_opts(opts = {}); end
       end
     }
   end
