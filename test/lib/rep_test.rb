@@ -23,10 +23,6 @@ describe Rep do
     new_rep_class.must_respond_to :fields
   end
 
-  it "has a parse_opts method" do
-    new_rep_class.must_respond_to :parse_opts
-  end
-
   it "can have fields" do
     klass = new_rep_class do
       fields [:foo, :bar] => :default
