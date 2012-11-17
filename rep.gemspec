@@ -18,6 +18,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.add_dependency 'json'
   gem.add_development_dependency 'rake'
+  gem.add_development_dependency 'minitest'
   gem.add_development_dependency 'rocco'
   gem.add_development_dependency 'rdiscount'
 end
