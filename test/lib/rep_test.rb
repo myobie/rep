@@ -38,22 +38,22 @@ describe Rep do
     klass = new_rep_class do
       initialize_with :foo, :bar
     end
-    inst = klass.new(foo: 'foo123')
+    inst = klass.new(:foo => 'foo123')
     inst.foo.must_equal 'foo123'
     inst.bar.must_be_nil
   end
 
   it "can have default initialization options" do
     klass = new_rep_class do
-      initialize_with :foo, { bar: "barbar" }
+      initialize_with :foo, { :bar => "barbar" }
     end
-    inst = klass.new(foo: 'foofoo')
+    inst = klass.new(:foo => 'foofoo')
     inst.bar.must_equal 'barbar'
   end
 
   it "can overried default initialization options" do
     klass = new_rep_class do
-      initialize_with :foo, { bar: "barbar" }
+      initialize_with :foo, { :bar => "barbar" }
     end
     inst = klass.new(bar: 'notbar')
     inst.bar.must_equal 'notbar'
@@ -133,10 +133,48 @@ describe Rep do
       fields :keys => :default
       forward :keys => :hash
     end
-    hashes = [{ one: 1, two: 2 },
-              { three: 3, four: 4 },
-              { one: 1, five: 5 }]
+    hashes = [{ :one => 1, :two => 2 },
+              { :three => 3, :four => 4 },
+              { :one => 1, :five => 5 }]
     hashes.map(&klass).to_json.must_equal '[{"keys":["one","two"]},{"keys":["three","four"]},{"keys":["one","five"]}]'
+  end
+
+  describe "shared" do
+
+    User = Struct.new(:name, :age)
+    def users
+      @users ||= %w(Nathan 28 Jason 31 Justin 23).each_slice(2).
+                   map { |name, age| User.new(name, age.to_i) }
+    end
+    class UserRep
+      include Rep
+      initialize_with :user
+      fields [:name, :age, :random_number] => :default
+      forward fields(:default) => :user
+
+      def random_number
+        @random_number ||= rand(100)
+      end
+    end
+
+    it "should memoize random_number" do
+      rep = UserRep.new(:user => users.first)
+      rep.random_number.must_equal rep.random_number
+    end
+
+    it "should get a clean instance each time" do
+      num1 = UserRep.shared(:user => users.first).random_number
+      num2 = UserRep.shared(:user => users.first).random_number
+      num1.wont_equal num2
+    end
+
+    it "should be really really shared" do
+      rep1 = UserRep.shared(:user => users.first)
+      rep2 = UserRep.shared(:user => users.last)
+      rep1.must_equal rep2
+      rep1.name.must_equal rep2.name
+    end
+
   end
 
 end
