@@ -84,7 +84,7 @@ describe Rep do
       def two; 2; end
       def three; 3; end
     end
-    klass.new.to_hash.must_equal one: 1, two: 2, three: 3
+    klass.new.to_hash.must_equal :one => 1, :two => 2, :three => 3
   end
 
   it "should send fields to instance to make json" do
