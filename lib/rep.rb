@@ -220,9 +220,7 @@ module Rep
     end
 
     # An easy way to save on GC is to use the same instance to turn an array of objects into hashes instead
-    # of instantiating a new object for every object in the array. However, **this is currently not threadsafe**
-    # and you have been warned. Once I figure out how to test threadsafe code in a reliable way, this will get
-    # addressed. Here is an example of it's usage:
+    # of instantiating a new object for every object in the array. Here is an example of it's usage:
     #
     #     class BookRep
     #       initialize_with :book_model
@@ -232,12 +230,24 @@ module Rep
     #
     #     BookRep.shared(:book_model => Book.first).to_hash # => { :title => "Moby Dick" }
     #     BookRep.shared(:book_model => Book.last).to_hash  # => { :title => "Lost Horizon" }
+    #
+    # This should terrify you. If it doesn't, then this example will:
+    #
+    #     book1 = BookRep.shared(:book_model => Book.first)
+    #     book2 = BookRep.shared(:book_model => Book.last)
+    #
+    #     boo1.object_id === book2.object_id # => true
+    #
+    # **It really is a shared object.**
+    #
+    # You really shouldn't use this method directly for anything.
 
     def shared(opts = {})
-      @instance ||= new
-      @instance.reset_for_json!
-      @instance.parse_opts(opts)
-      @instance
+      @pointer = (Thread.current[:rep_shared_instances] ||= {})
+      @pointer[object_id] ||= new
+      @pointer[object_id].reset_for_json!
+      @pointer[object_id].parse_opts(opts)
+      @pointer[object_id]
     end
 
     # The fanciest thing in this entire library is this `#to_proc` method. Here is an example of it's usage:
