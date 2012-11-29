@@ -70,7 +70,8 @@ describe Rep do
       fields [:one, :four] => :default
       fields [:one, :two, :three] => :superset
     end
-    klass.all_json_fields.must_equal [:one, :four, :two, :three]
+    fields = klass.all_json_fields.sort.map { |f| f.to_s }
+    fields.must_equal [:one, :four, :two, :three].sort.map { |f| f.to_s }
   end
 
   it "should send fields to instance to make hash" do
