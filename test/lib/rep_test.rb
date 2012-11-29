@@ -133,7 +133,8 @@ describe Rep do
     hashes = [{ :one => 1, :two => 2 },
               { :three => 3, :four => 4 },
               { :one => 1, :five => 5 }]
-    hashes.map(&klass).to_json.must_equal '[{"keys":["one","two"]},{"keys":["three","four"]},{"keys":["one","five"]}]'
+    result = [{ "keys" => ["one", "two"] }, { "keys" => ["three", "four"] }, { "keys" => ["one", "five"] }]
+    JSON.parse(hashes.map(&klass).to_json).must_equal result
   end
 
   describe "forward" do
