@@ -128,12 +128,14 @@ describe Rep do
     klass = new_rep_class do
       initialize_with :hash
       fields :keys => :default
-      forward :keys => :hash
+      def keys
+        hash.keys.map { |k| k.to_s }.sort
+      end
     end
     hashes = [{ :one => 1, :two => 2 },
               { :three => 3, :four => 4 },
               { :one => 1, :five => 5 }]
-    result = [{ "keys" => ["one", "two"] }, { "keys" => ["three", "four"] }, { "keys" => ["one", "five"] }]
+    result = [{ "keys" => ["one", "two"] }, { "keys" => ["four", "three"] }, { "keys" => ["five", "one"] }]
     JSON.parse(hashes.map(&klass).to_json).must_equal result
   end
 
