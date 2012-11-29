@@ -56,6 +56,15 @@ module Rep
           include HashieSupport
         end
       end
+
+      # Translate for ActiveSupport, the jerk
+      if method(:delegate).arity == -1
+        def delegate(opts = {})
+          methods, object_name = opts.to_a.first
+          args = methods.concat([:to => object_name])
+          super(*args)
+        end
+      end
     }
   end
 

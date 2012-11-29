@@ -135,6 +135,21 @@ describe Rep do
     hashes.map(&klass).to_json.must_equal '[{"keys":["one","two"]},{"keys":["three","four"]},{"keys":["one","five"]}]'
   end
 
+  describe "forward" do
+    class Forwardtest
+      include Rep
+      attr_reader :target
+      def initialize
+        @target = "Hello, I am a string"
+      end
+      forward [:length] => :target
+    end
+
+    it "should forward (delegate)" do
+      assert_equal 20, Forwardtest.new.length
+    end
+  end
+
   describe "shared" do
 
     User = Struct.new(:name, :age)
