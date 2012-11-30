@@ -37,23 +37,21 @@ module Rep
     klass.extend Forwardable
     klass.extend ClassMethods
     klass.instance_eval {
-      # Translate for ActiveSupport, the jerk
-      if method(:delegate).arity == -1
-        class << self
-          def delegate(opts = {})
-            methods, object_name = opts.to_a.first
-            args = methods.concat([:to => object_name])
-            super(*args)
-          end
-        end
-      end
-
       class << self
         unless defined?(delegate)
           def delegate(opts = {})
             methods, object_name = opts.to_a.first
             args = [object_name, methods].flatten
             def_delegators *args
+          end
+        end
+
+        # Translate for ActiveSupport, the jerk
+        if method(:delegate).arity == -1
+          def delegate(opts = {})
+            methods, object_name = opts.to_a.first
+            args = methods.concat([:to => object_name])
+            super(*args)
           end
         end
 
