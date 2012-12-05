@@ -60,10 +60,10 @@ module Rep
         unless defined?(fields)
           alias fields json_fields
         end
+      end
 
-        if defined?(Hashie)
-          include HashieSupport
-        end
+      if defined?(Hashie)
+        include HashieSupport
       end
     }
   end
