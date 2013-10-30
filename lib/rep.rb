@@ -38,32 +38,17 @@ module Rep
     klass.extend ClassMethods
     klass.instance_eval {
       class << self
-        unless defined?(delegate)
-          def delegate(opts = {})
-            methods, object_name = opts.to_a.first
-            args = [object_name, methods].flatten
-            def_delegators *args
-          end
+        unless defined?(forward)
+          alias forward delegate
         end
-
-        # Translate for ActiveSupport, the jerk
-        if method(:delegate).arity == -1
-          def delegate(opts = {})
-            methods, object_name = opts.to_a.first
-            args = methods.concat([:to => object_name])
-            super(*args)
-          end
-        end
-
-        alias forward delegate
 
         unless defined?(fields)
           alias fields json_fields
         end
       end
 
-      if defined?(Hashie)
-        include HashieSupport
+      if defined?(Mashed)
+        include MashedSupport
       end
     }
   end
@@ -315,9 +300,9 @@ module Rep
     end
   end
 
-  module HashieSupport
+  module MashedSupport
     def to_hash(name = :default)
-      Hashie::Mash.new(super)
+      Mashed::Mash.new(super)
     end
   end
 end
