@@ -90,7 +90,7 @@ A.new([1,2,3]).first  # =&gt; 1
         </div>
         <p>All classes that <code>include Rep</code> are extended with <code>Forwardable</code>,
 given some aliases, endowned with <code>HashieSupport</code> if Hashie is loaded,
-and setup an empty <code>#parse_opts</code> because it is required for <code>::shared</code>.</p>
+and given a delegate method if it doesn&rsquo;t already have one.</p>
       </td>
       <td class=code>
         <div class='highlight'><pre>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">klass</span><span class="p">)</span>
@@ -98,19 +98,17 @@ and setup an empty <code>#parse_opts</code> because it is required for <code>::s
     <span class="n">klass</span><span class="o">.</span><span class="n">extend</span> <span class="no">ClassMethods</span>
     <span class="n">klass</span><span class="o">.</span><span class="n">instance_eval</span> <span class="p">{</span>
       <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
-        <span class="k">alias</span> <span class="n">forward</span> <span class="n">delegate</span>
+        <span class="k">unless</span> <span class="n">defined?</span><span class="p">(</span><span class="n">forward</span><span class="p">)</span>
+          <span class="k">alias</span> <span class="n">forward</span> <span class="n">delegate</span>
+        <span class="k">end</span>
 
         <span class="k">unless</span> <span class="n">defined?</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
           <span class="k">alias</span> <span class="n">fields</span> <span class="n">json_fields</span>
         <span class="k">end</span>
-
-        <span class="k">if</span> <span class="n">defined?</span><span class="p">(</span><span class="no">Hashie</span><span class="p">)</span>
-          <span class="kp">include</span> <span class="no">HashieSupport</span>
-        <span class="k">end</span>
       <span class="k">end</span>
 
-      <span class="k">unless</span> <span class="n">defined?</span><span class="p">(</span><span class="n">parse_opts</span><span class="p">)</span>
-        <span class="k">def</span> <span class="nf">parse_opts</span><span class="p">(</span><span class="n">opts</span> <span class="o">=</span> <span class="p">{});</span> <span class="k">end</span>
+      <span class="k">if</span> <span class="n">defined?</span><span class="p">(</span><span class="no">Mashed</span><span class="p">)</span>
+        <span class="kp">include</span> <span class="no">MashedSupport</span>
       <span class="k">end</span>
     <span class="p">}</span>
   <span class="k">end</span></pre></div>
@@ -223,8 +221,13 @@ does not have to be used to use any other parts of Rep.</p>
         <p>Remember what args we normally initialize with so we can refer to them when building shared instances.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>      <span class="n">define_singleton_method</span> <span class="ss">:initializiation_args</span> <span class="k">do</span>
-        <span class="vi">@initializiation_args</span>
+        <div class='highlight'><pre>      <span class="k">if</span> <span class="n">defined?</span><span class="p">(</span><span class="n">define_singleton_method</span><span class="p">)</span>
+        <span class="n">define_singleton_method</span> <span class="ss">:initializiation_args</span> <span class="k">do</span>
+          <span class="vi">@initializiation_args</span>
+        <span class="k">end</span>
+      <span class="k">else</span>
+        <span class="n">singleton</span> <span class="o">=</span> <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span><span class="p">;</span> <span class="nb">self</span> <span class="k">end</span>
+        <span class="n">singleton</span><span class="o">.</span><span class="n">send</span> <span class="ss">:define_method</span><span class="p">,</span> <span class="ss">:initializiation_args</span><span class="p">,</span> <span class="nb">lambda</span> <span class="p">{</span> <span class="vi">@initializiation_args</span> <span class="p">}</span>
       <span class="k">end</span></pre></div>
       </td>
     </tr>
@@ -238,7 +241,10 @@ does not have to be used to use any other parts of Rep.</p>
       <td class=code>
         <div class='highlight'><pre>      <span class="n">args</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">a</span><span class="o">|</span> <span class="n">register_accessor</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="p">}</span>
 
-      <span class="n">define_method</span><span class="p">(</span><span class="ss">:initialize</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">opts</span> <span class="o">=</span> <span class="p">{}</span><span class="o">|</span> <span class="n">parse_opts</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span> <span class="p">}</span></pre></div>
+      <span class="n">define_method</span><span class="p">(</span><span class="ss">:initialize</span><span class="p">)</span> <span class="p">{</span> <span class="o">|*</span><span class="n">args</span><span class="o">|</span>
+        <span class="n">opts</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">first</span> <span class="o">||</span> <span class="p">{}</span>
+        <span class="n">parse_opts</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
+      <span class="p">}</span></pre></div>
       </td>
     </tr>
     <tr id='section-11'>
@@ -465,9 +471,9 @@ end
     <span class="k">end</span>
   <span class="k">end</span>
 
-  <span class="k">module</span> <span class="nn">HashieSupport</span>
+  <span class="k">module</span> <span class="nn">MashedSupport</span>
     <span class="k">def</span> <span class="nf">to_hash</span><span class="p">(</span><span class="nb">name</span> <span class="o">=</span> <span class="ss">:default</span><span class="p">)</span>
-      <span class="no">Hashie</span><span class="o">::</span><span class="no">Mash</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="k">super</span><span class="p">)</span>
+      <span class="no">Mashed</span><span class="o">::</span><span class="no">Mash</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="k">super</span><span class="p">)</span>
     <span class="k">end</span>
   <span class="k">end</span>
 <span class="k">end</span></pre></div>
