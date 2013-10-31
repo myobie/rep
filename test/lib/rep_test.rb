@@ -56,6 +56,16 @@ describe Rep do
     inst.foo.must_be_nil
   end
 
+  it "can take a block for initialization custimization" do
+    klass = new_rep_class do
+      initialize_with :foo do |opts|
+        opts[:foo] &&= opts[:foo].to_s
+      end
+    end
+    inst = klass.new(:foo => :bar)
+    inst.foo.must_equal 'bar'
+  end
+
   it "should accept multiple sets of fields" do
     klass = new_rep_class do
       fields [:one, :four] => :default

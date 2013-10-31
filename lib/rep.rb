@@ -119,7 +119,7 @@ module Rep
     # If your class already has an `#iniatialize` method then this will overwrite it (so don't use it). `#initialize_with`
     # does not have to be used to use any other parts of Rep.
 
-    def initialize_with(*args)
+    def initialize_with(*args, &blk)
       @initializiation_args = args
 
       # Remember what args we normally initialize with so we can refer to them when building shared instances.
@@ -137,8 +137,7 @@ module Rep
 
       args.each { |a| register_accessor(a) }
 
-      define_method(:initialize) { |*args|
-        opts = args.first || {}
+      define_method(:initialize) { |opts={}|
         parse_opts(opts)
       }
 
@@ -147,6 +146,7 @@ module Rep
 
       define_method :parse_opts do |opts|
         @rep_options = opts
+        blk.call(opts) unless blk.nil?
         self.class.initializiation_args.each do |field|
           name = field.is_a?(Hash) ? field.to_a.first.first : field
           instance_variable_set(:"@#{name}", opts[name])
