@@ -209,7 +209,7 @@ If your class already has an <code>#iniatialize</code> method then this will ove
 does not have to be used to use any other parts of Rep.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">initialize_with</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">initialize_with</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">blk</span><span class="p">)</span>
       <span class="vi">@initializiation_args</span> <span class="o">=</span> <span class="n">args</span></pre></div>
       </td>
     </tr>
@@ -241,8 +241,7 @@ does not have to be used to use any other parts of Rep.</p>
       <td class=code>
         <div class='highlight'><pre>      <span class="n">args</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">a</span><span class="o">|</span> <span class="n">register_accessor</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="p">}</span>
 
-      <span class="n">define_method</span><span class="p">(</span><span class="ss">:initialize</span><span class="p">)</span> <span class="p">{</span> <span class="o">|*</span><span class="n">args</span><span class="o">|</span>
-        <span class="n">opts</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">first</span> <span class="o">||</span> <span class="p">{}</span>
+      <span class="n">define_method</span><span class="p">(</span><span class="ss">:initialize</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">opts</span><span class="o">=</span><span class="p">{}</span><span class="o">|</span>
         <span class="n">parse_opts</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
       <span class="p">}</span></pre></div>
       </td>
@@ -258,6 +257,7 @@ must negotiate Hashes and use the first key of the hash for the <code>attr_acces
       <td class=code>
         <div class='highlight'><pre>      <span class="n">define_method</span> <span class="ss">:parse_opts</span> <span class="k">do</span> <span class="o">|</span><span class="n">opts</span><span class="o">|</span>
         <span class="vi">@rep_options</span> <span class="o">=</span> <span class="n">opts</span>
+        <span class="n">blk</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span> <span class="k">unless</span> <span class="n">blk</span><span class="o">.</span><span class="n">nil?</span>
         <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">initializiation_args</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">field</span><span class="o">|</span>
           <span class="nb">name</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Hash</span><span class="p">)</span> <span class="p">?</span> <span class="n">field</span><span class="o">.</span><span class="n">to_a</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">first</span> <span class="p">:</span> <span class="n">field</span>
           <span class="nb">instance_variable_set</span><span class="p">(</span><span class="ss">:&quot;@</span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="ss">&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="o">[</span><span class="nb">name</span><span class="o">]</span><span class="p">)</span>
