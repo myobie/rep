@@ -9,7 +9,7 @@ end
 
 desc "Build Docco Docs"
 task :docco do
-  `docco lib/*.rb`
+  `docco lib/**/*.rb`
 end
 
 require 'fileutils'
