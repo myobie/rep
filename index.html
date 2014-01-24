@@ -1,58 +1,41 @@
 <!DOCTYPE html>
+
 <html>
 <head>
-  <meta http-equiv="content-type" content="text/html;charset=utf-8">
   <title>rep.rb</title>
-  <link rel="stylesheet" href="http://jashkenas.github.com/docco/resources/docco.css">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
 </head>
 <body>
-<div id='container'>
-  <div id="background"></div>
-  <div id="jump_to">
-    Jump To &hellip;
-    <div id="jump_wrapper">
-      <div id="jump_page">
-          <a class="source" href="rep.html">rep.rb</a>
-          <a class="source" href="rep/version.html">version.rb</a>
-      </div>
-    </div>
-  </div>
-  <table cellspacing=0 cellpadding=0>
-  <thead>
-    <tr>
-      <th class=docs><h1>rep.rb</h1></th>
-      <th class=code></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr id='section-1'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-1">&#182;</a>
-        </div>
-        <p><strong>Rep</strong> is a small module to endow any class to make json quickly. It solves four problems:</p>
-
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>rep.rb</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p><strong>Rep</strong> is a small module to endow any class to make json quickly. It solves four problems:</p>
 <ol>
 <li>Enumerating top level keys for a json structure</li>
 <li>Providing a convention for the value of those keys</li>
-<li>Defining <code>attr_accessor</code>&rsquo;s that are prefilled from an options hash given to <code>#initialize</code></li>
+<li>Defining <code>attr_accessor</code>&#39;s that are prefilled from an options hash given to <code>#initialize</code></li>
 <li>Sharing instances to help GC</li>
 </ol>
-
-
 <p>The code is available on <a href="http://github.com/myobie/rep">github</a>.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre></pre></div>
-      </td>
-    </tr>
-    <tr id='section-2'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-2">&#182;</a>
-        </div>
-        <p><code>Forwardable</code> is in the stdlib and allows ruby objects to delegate methods off to other objects. An example:</p>
-
+<p><code>Forwardable</code> is in the stdlib and allows ruby objects to delegate methods off to other objects. An example:</p>
 <pre><code>class A
   extend Forwardable
   delegate [:length, :first] =&gt; :@array
@@ -64,380 +47,423 @@ end
 A.new([1,2,3]).length # =&gt; 3
 A.new([1,2,3]).first  # =&gt; 1
 </code></pre>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre><span class="nb">require</span> <span class="s1">&#39;forwardable&#39;</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-3'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-3">&#182;</a>
-        </div>
-        <p><code>JSON::generate</code> and <code>JSON::decode</code> are much safer to use than <code>Object#to_json</code>.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre><span class="nb">require</span> <span class="s1">&#39;json&#39;</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">require</span> <span class="hljs-string">'forwardable'</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p><code>JSON::generate</code> and <code>JSON::decode</code> are much safer to use than <code>Object#to_json</code>.</p>
 
-<span class="nb">require</span> <span class="s1">&#39;rep/version&#39;</span>
-<span class="k">module</span> <span class="nn">Rep</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-4'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-4">&#182;</a>
-        </div>
-        <p>All classes that <code>include Rep</code> are extended with <code>Forwardable</code>,
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">require</span> <span class="hljs-string">'json'</span>
+
+<span class="hljs-keyword">require</span> <span class="hljs-string">'rep/version'</span>
+<span class="hljs-class"><span class="hljs-keyword">module</span> <span class="hljs-title">Rep</span></span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>All classes that <code>include Rep</code> are extended with <code>Forwardable</code>,
 given some aliases, endowned with <code>HashieSupport</code> if Hashie is loaded,
-and setup an empty <code>#parse_opts</code> because it is required for <code>::shared</code>.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">klass</span><span class="p">)</span>
-    <span class="n">klass</span><span class="o">.</span><span class="n">extend</span> <span class="no">Forwardable</span>
-    <span class="n">klass</span><span class="o">.</span><span class="n">extend</span> <span class="no">ClassMethods</span>
-    <span class="n">klass</span><span class="o">.</span><span class="n">instance_eval</span> <span class="p">{</span>
-      <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
-        <span class="k">alias</span> <span class="n">forward</span> <span class="n">delegate</span>
+and given a delegate method if it doesn&#39;t already have one.</p>
 
-        <span class="k">unless</span> <span class="n">defined?</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span>
-          <span class="k">alias</span> <span class="n">fields</span> <span class="n">json_fields</span>
-        <span class="k">end</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-function"><span class="hljs-keyword">def</span> </span><span class="hljs-keyword">self</span>.included(klass)
+    klass.extend <span class="hljs-constant">Forwardable</span>
+    klass.extend <span class="hljs-constant">ClassMethods</span>
+    klass.instance_eval {
+      <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-inheritance">&lt;</span><span class="hljs-inheritance">&lt; <span class="hljs-parent">self</span></span></span>
+        <span class="hljs-keyword">unless</span> <span class="hljs-keyword">defined</span>?(forward)
+          <span class="hljs-keyword">alias</span> forward delegate
+        <span class="hljs-keyword">end</span>
 
-        <span class="k">if</span> <span class="n">defined?</span><span class="p">(</span><span class="no">Hashie</span><span class="p">)</span>
-          <span class="kp">include</span> <span class="no">HashieSupport</span>
-        <span class="k">end</span>
-      <span class="k">end</span>
+        <span class="hljs-keyword">unless</span> <span class="hljs-keyword">defined</span>?(fields)
+          <span class="hljs-keyword">alias</span> fields json_fields
+        <span class="hljs-keyword">end</span>
+      <span class="hljs-keyword">end</span>
 
-      <span class="k">unless</span> <span class="n">defined?</span><span class="p">(</span><span class="n">parse_opts</span><span class="p">)</span>
-        <span class="k">def</span> <span class="nf">parse_opts</span><span class="p">(</span><span class="n">opts</span> <span class="o">=</span> <span class="p">{});</span> <span class="k">end</span>
-      <span class="k">end</span>
-    <span class="p">}</span>
-  <span class="k">end</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-5'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-5">&#182;</a>
-        </div>
-        <p>Since a goal is to be able to share instances, we need an easy way to reset a
+      <span class="hljs-keyword">if</span> <span class="hljs-keyword">defined</span>?(<span class="hljs-constant">Mashed</span>)
+        <span class="hljs-keyword">include</span> <span class="hljs-constant">MashedSupport</span>
+      <span class="hljs-keyword">end</span>
+    }
+  <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Since a goal is to be able to share instances, we need an easy way to reset a
 shared instance back to factory defaults. If you memoize any methods that are
 not declared as json fields, then overried this method and set any memoized
 variables to nil, then super.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">reset_for_json!</span>
-    <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">all_json_methods</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">method_name</span><span class="o">|</span>
-      <span class="nb">instance_variable_set</span><span class="p">(</span><span class="ss">:&quot;@</span><span class="si">#{</span><span class="n">method_name</span><span class="si">}</span><span class="ss">&quot;</span><span class="p">,</span> <span class="kp">nil</span><span class="p">)</span>
-    <span class="k">end</span>
-  <span class="k">end</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-6'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-6">&#182;</a>
-        </div>
-        <p>All the work of generating a hash from an instance is packaged up in one method. Since
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-function"><span class="hljs-keyword">def</span> </span>reset_for_json!
+    <span class="hljs-keyword">self</span>.<span class="hljs-keyword">class</span>.all_json_methods.each <span class="hljs-keyword">do</span> |method_name|
+      instance_variable_set(<span class="hljs-symbol">:<span class="hljs-string">"@<span class="hljs-subst">#{method_name}</span>"</span></span>, <span class="hljs-keyword">nil</span>)
+    <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>All the work of generating a hash from an instance is packaged up in one method. Since
 fields can be aliases in the format <code>{ :json_key_name =&gt; :method_name }</code>, there
 is some fancy logic to determine the <code>field_name</code> and <code>method_name</code> variables.</p>
-
 <pre><code>{ :one =&gt; :foo }.to_a # =&gt; [[:one, :foo]]
-</code></pre>
-
-<p>Right now it will raise if either a field doesn&rsquo;t have a method to provide it&rsquo;s value or
+</code></pre><p>Right now it will raise if either a field doesn&#39;t have a method to provide it&#39;s value or
 if there are no json fields setup for the particular set (which defaults to <code>:default</code>).</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">to_hash</span><span class="p">(</span><span class="nb">name</span> <span class="o">=</span> <span class="ss">:default</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">fields</span> <span class="o">=</span> <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">json_fields</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
-      <span class="n">fields</span><span class="o">.</span><span class="n">reduce</span><span class="p">({})</span> <span class="k">do</span> <span class="o">|</span><span class="n">memo</span><span class="p">,</span> <span class="n">field</span><span class="o">|</span>
-        <span class="n">field_name</span><span class="p">,</span> <span class="n">method_name</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Hash</span><span class="p">)</span> <span class="p">?</span> <span class="n">field</span><span class="o">.</span><span class="n">to_a</span><span class="o">.</span><span class="n">first</span> <span class="p">:</span> <span class="o">[</span><span class="n">field</span><span class="p">,</span> <span class="n">field</span><span class="o">]</span>
-        <span class="k">begin</span>
-          <span class="n">memo</span><span class="o">[</span><span class="n">field_name</span><span class="o">]</span> <span class="o">=</span> <span class="nb">send</span><span class="p">(</span><span class="n">method_name</span><span class="p">)</span>
-        <span class="k">rescue</span> <span class="no">NoMethodError</span> <span class="o">=&gt;</span> <span class="n">e</span>
-          <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;There is no method named &#39;</span><span class="si">#{</span><span class="n">method_name</span><span class="si">}</span><span class="s2">&#39; for the class &#39;</span><span class="si">#{</span><span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="si">}</span><span class="s2">&#39; for the &#39;</span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2">&#39; list of fields : </span><span class="si">#{</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
-          <span class="k">raise</span> <span class="no">NoMethodError</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">method_name</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
-        <span class="k">end</span>
-        <span class="n">memo</span>
-      <span class="k">end</span>
-    <span class="k">else</span>
-      <span class="k">raise</span> <span class="s2">&quot;There are no json fields under the name: </span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
 
-  <span class="k">def</span> <span class="nf">to_json</span>
-    <span class="no">JSON</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">to_hash</span><span class="p">)</span>
-  <span class="k">end</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-function"><span class="hljs-keyword">def</span> </span>to_hash(name = <span class="hljs-symbol">:default</span>)
+    <span class="hljs-keyword">if</span> fields = <span class="hljs-keyword">self</span>.<span class="hljs-keyword">class</span>.json_fields(name)
+      fields.each_with_object({}) <span class="hljs-keyword">do</span> |field, memo|
+        field_name, method_name = field.is_a?(<span class="hljs-constant">Hash</span>) ? field.to_a.first <span class="hljs-symbol">:</span> [field, field]
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">self</span>.respond_to?(method_name)
+          memo[field_name] = send(method_name)
+        <span class="hljs-keyword">else</span>
+          message = <span class="hljs-string">"There is no method named '<span class="hljs-subst">#{method_name}</span>' for the class '<span class="hljs-subst">#{<span class="hljs-keyword">self</span>.<span class="hljs-keyword">class</span>}</span>' for the '<span class="hljs-subst">#{name}</span>' list of fields : <span class="hljs-subst">#{e.message}</span>"</span>
+          raise <span class="hljs-constant">NoMethodError</span>.new(message, method_name, e.args)
+        <span class="hljs-keyword">end</span>
+      <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">else</span>
+      raise <span class="hljs-string">"There are no json fields under the name: <span class="hljs-subst">#{name}</span>"</span>
+    <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">end</span>
 
-  <span class="k">module</span> <span class="nn">ClassMethods</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-7'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-7">&#182;</a>
-        </div>
-        <p>Defines an attr_accessor with a default value. The default for default is nil. Example:</p>
+  <span class="hljs-function"><span class="hljs-keyword">def</span> </span>to_mash(name = <span class="hljs-symbol">:default</span>)
+    <span class="hljs-constant">Mashed::Mash</span>.new(to_hash(name))
+  <span class="hljs-keyword">end</span>
 
+  <span class="hljs-function"><span class="hljs-keyword">def</span> </span>to_json
+    <span class="hljs-constant">JSON</span>.generate(to_hash)
+  <span class="hljs-keyword">end</span>
+
+  <span class="hljs-class"><span class="hljs-keyword">module</span> <span class="hljs-title">ClassMethods</span></span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Defines an attr_accessor with a default value. The default for default is nil. Example:</p>
 <pre><code>class A
-  register_accessor :name =&gt; "No Name"
+  register_accessor :name =&gt; &quot;No Name&quot;
 end
 
-A.new.name # =&gt; "No Name"
+A.new.name # =&gt; &quot;No Name&quot;
 </code></pre>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">register_accessor</span><span class="p">(</span><span class="n">acc</span><span class="p">)</span>
-      <span class="nb">name</span><span class="p">,</span> <span class="n">default</span> <span class="o">=</span> <span class="n">acc</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Hash</span><span class="p">)</span> <span class="p">?</span> <span class="n">acc</span><span class="o">.</span><span class="n">to_a</span><span class="o">.</span><span class="n">first</span> <span class="p">:</span> <span class="o">[</span><span class="n">acc</span><span class="p">,</span> <span class="kp">nil</span><span class="o">]</span>
-      <span class="kp">attr_accessor</span> <span class="nb">name</span>
-      <span class="k">if</span> <span class="n">default</span>
-        <span class="n">define_method</span> <span class="nb">name</span> <span class="k">do</span>
-          <span class="n">var_name</span> <span class="o">=</span> <span class="ss">:&quot;@</span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="ss">&quot;</span>
-          <span class="nb">instance_variable_get</span><span class="p">(</span><span class="n">var_name</span><span class="p">)</span> <span class="o">||</span> <span class="nb">instance_variable_set</span><span class="p">(</span><span class="n">var_name</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
-        <span class="k">end</span>
-      <span class="k">end</span>
-    <span class="k">end</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-8'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-8">&#182;</a>
-        </div>
-        <p>Defines an <code>#initialize</code> method that accepts a Hash argument and copies some keys out into <code>attr_accessors</code>.
-If your class already has an <code>#iniatialize</code> method then this will overwrite it (so don&rsquo;t use it). <code>#initialize_with</code>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">def</span> </span>register_accessor(acc)
+      name, default = acc.is_a?(<span class="hljs-constant">Hash</span>) ? acc.to_a.first <span class="hljs-symbol">:</span> [acc, <span class="hljs-keyword">nil</span>]
+      <span class="hljs-keyword">attr_accessor</span> name
+      <span class="hljs-keyword">if</span> default
+        define_method name <span class="hljs-keyword">do</span>
+          var_name = <span class="hljs-symbol">:<span class="hljs-string">"@<span class="hljs-subst">#{name}</span>"</span></span>
+          instance_variable_get(var_name) || instance_variable_set(var_name, default)
+        <span class="hljs-keyword">end</span>
+      <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Defines an <code>#initialize</code> method that accepts a Hash argument and copies some keys out into <code>attr_accessors</code>.
+If your class already has an <code>#iniatialize</code> method then this will overwrite it (so don&#39;t use it). <code>#initialize_with</code>
 does not have to be used to use any other parts of Rep.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">initialize_with</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
-      <span class="vi">@initializiation_args</span> <span class="o">=</span> <span class="n">args</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-9'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-9">&#182;</a>
-        </div>
-        <p>Remember what args we normally initialize with so we can refer to them when building shared instances.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>      <span class="n">define_singleton_method</span> <span class="ss">:initializiation_args</span> <span class="k">do</span>
-        <span class="vi">@initializiation_args</span>
-      <span class="k">end</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-10'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-10">&#182;</a>
-        </div>
-        <p>Create an <code>attr_accessor</code> for each one. Defaults can be provided using the Hash version { :arg => :default_value }</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>      <span class="n">args</span><span class="o">.</span><span class="n">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">a</span><span class="o">|</span> <span class="n">register_accessor</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="p">}</span>
 
-      <span class="n">define_method</span><span class="p">(</span><span class="ss">:initialize</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">opts</span> <span class="o">=</span> <span class="p">{}</span><span class="o">|</span> <span class="n">parse_opts</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span> <span class="p">}</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-11'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-11">&#182;</a>
-        </div>
-        <p><code>#parse_opts</code> is responsable for getting the <code>attr_accessor</code> values prefilled. Since defaults can be specified, it
-must negotiate Hashes and use the first key of the hash for the <code>attr_accessor</code>&rsquo;s name.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>      <span class="n">define_method</span> <span class="ss">:parse_opts</span> <span class="k">do</span> <span class="o">|</span><span class="n">opts</span><span class="o">|</span>
-        <span class="vi">@rep_options</span> <span class="o">=</span> <span class="n">opts</span>
-        <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">initializiation_args</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">field</span><span class="o">|</span>
-          <span class="nb">name</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Hash</span><span class="p">)</span> <span class="p">?</span> <span class="n">field</span><span class="o">.</span><span class="n">to_a</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">first</span> <span class="p">:</span> <span class="n">field</span>
-          <span class="nb">instance_variable_set</span><span class="p">(</span><span class="ss">:&quot;@</span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="ss">&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="o">[</span><span class="nb">name</span><span class="o">]</span><span class="p">)</span>
-        <span class="k">end</span>
-      <span class="k">end</span>
-    <span class="k">end</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-12'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-12">&#182;</a>
-        </div>
-        <p><code>#json_fields</code> setups up some class instance variables to remember sets of top level keys for json structures. Example:</p>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">def</span> </span>initialize_with(*args, &amp;blk)
+      <span class="hljs-variable">@initializiation_args</span> = args</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Remember what args we normally initialize with so we can refer to them when building shared instances.</p>
 
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">if</span> <span class="hljs-keyword">defined</span>?(define_singleton_method)
+        define_singleton_method <span class="hljs-symbol">:initializiation_args</span> <span class="hljs-keyword">do</span>
+          <span class="hljs-variable">@initializiation_args</span>
+        <span class="hljs-keyword">end</span>
+      <span class="hljs-keyword">else</span>
+        singleton = <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-inheritance">&lt;</span><span class="hljs-inheritance">&lt; <span class="hljs-parent">self</span></span>;</span> <span class="hljs-keyword">self</span> <span class="hljs-keyword">end</span>
+        singleton.send <span class="hljs-symbol">:define_method</span>, <span class="hljs-symbol">:initializiation_args</span>, lambda { <span class="hljs-variable">@initializiation_args</span> }
+      <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Create an <code>attr_accessor</code> for each one. Defaults can be provided using the Hash version { :arg =&gt; :default_value }</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      args.each { |a| register_accessor(a) }
+
+      define_method(<span class="hljs-symbol">:initialize</span>) { |opts={}|
+        parse_opts(opts)
+      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p><code>#parse_opts</code> is responsable for getting the <code>attr_accessor</code> values prefilled. Since defaults can be specified, it
+must negotiate Hashes and use the first key of the hash for the <code>attr_accessor</code>&#39;s name.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      define_method <span class="hljs-symbol">:parse_opts</span> <span class="hljs-keyword">do</span> |opts|
+        <span class="hljs-variable">@rep_options</span> = opts
+        blk.call(opts) <span class="hljs-keyword">unless</span> blk.<span class="hljs-keyword">nil</span>?
+        <span class="hljs-keyword">self</span>.<span class="hljs-keyword">class</span>.initializiation_args.each <span class="hljs-keyword">do</span> |field|
+          name = field.is_a?(<span class="hljs-constant">Hash</span>) ? field.to_a.first.first <span class="hljs-symbol">:</span> field
+          instance_variable_set(<span class="hljs-symbol">:<span class="hljs-string">"@<span class="hljs-subst">#{name}</span>"</span></span>, opts[name])
+        <span class="hljs-keyword">end</span>
+      <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p><code>#json_fields</code> setups up some class instance variables to remember sets of top level keys for json structures. Example:</p>
 <pre><code>class A
   json_fields [:one, :two, :three] =&gt; :default
 end
 
 A.json_fields(:default) # =&gt; [:one, :two, :three]
-</code></pre>
-
-<p>There is a general assumption that each top level key&rsquo;s value is provided by a method of the same name on an instance
+</code></pre><p>There is a general assumption that each top level key&#39;s value is provided by a method of the same name on an instance
 of the class. If this is not true, a Hash syntax can be used to alias to a different method name. Example:</p>
-
 <pre><code>class A
   json_fields [{ :one =&gt; :the_real_one_method }, :two, { :three =&gt; :some_other_three }] =&gt; :default
 end
-</code></pre>
-
-<p>Once can also set multiple sets of fields. Example:</p>
-
+</code></pre><p>Once can also set multiple sets of fields. Example:</p>
 <pre><code>class A
   json_fields [:one, :two, :three] =&gt; :default
   json_fields [:five, :two, :six] =&gt; :other
 end
-</code></pre>
-
-<p>And all fields are returned by calling <code>#json_fields</code> with no args. Example:</p>
-
+</code></pre><p>And all fields are returned by calling <code>#json_fields</code> with no args. Example:</p>
 <pre><code>A.json_fields # =&gt; { :default =&gt; [:one, :two, :three], :other =&gt; [:five, :two, :six] }
 </code></pre>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">json_fields</span><span class="p">(</span><span class="n">arg</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">)</span>
-      <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Hash</span><span class="p">)</span>
-        <span class="n">fields</span><span class="p">,</span> <span class="nb">name</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">to_a</span><span class="o">.</span><span class="n">first</span>
-        <span class="vi">@json_fields</span> <span class="o">||=</span> <span class="p">{}</span>
-        <span class="vi">@json_fields</span><span class="o">[</span><span class="nb">name</span><span class="o">]</span> <span class="o">=</span> <span class="o">[</span><span class="n">fields</span><span class="o">].</span><span class="n">flatten</span>
-      <span class="k">elsif</span> <span class="n">arg</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Symbol</span><span class="p">)</span>
-        <span class="vi">@json_fields</span> <span class="o">||=</span> <span class="p">{}</span>
-        <span class="vi">@json_fields</span><span class="o">[</span><span class="n">arg</span><span class="o">]</span>
-      <span class="k">elsif</span> <span class="n">arg</span> <span class="o">===</span> <span class="kp">nil</span>
-        <span class="vi">@json_fields</span> <span class="o">||</span> <span class="p">{}</span>
-      <span class="k">else</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-13'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-13">&#182;</a>
-        </div>
-        <p>TODO: make an exception class</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>        <span class="k">raise</span> <span class="s2">&quot;You can only use a Hash to set fields, a Symbol to retrieve them, or no argument to retrieve all fields for all names&quot;</span>
-      <span class="k">end</span>
-    <span class="k">end</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-14'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-14">&#182;</a>
-        </div>
-        <p><code>#flat_json_fields</code> is just a utility method to DRY up the next two methods, because their code is almost exactly the same,
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">def</span> </span>json_fields(arg = <span class="hljs-keyword">nil</span>)
+      <span class="hljs-keyword">if</span> arg.is_a?(<span class="hljs-constant">Hash</span>)
+        fields, name = arg.to_a.first
+        <span class="hljs-variable">@json_fields</span> ||= {}
+        <span class="hljs-variable">@json_fields</span>[name] = [fields].flatten
+      <span class="hljs-keyword">elsif</span> arg.is_a?(<span class="hljs-constant">Symbol</span>)
+        <span class="hljs-variable">@json_fields</span> ||= {}
+        <span class="hljs-variable">@json_fields</span>[arg]
+      <span class="hljs-keyword">elsif</span> arg === <span class="hljs-keyword">nil</span>
+        <span class="hljs-variable">@json_fields</span> || {}
+      <span class="hljs-keyword">else</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>TODO: make an exception class</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        raise <span class="hljs-string">"You can only use a Hash to set fields, a Symbol to retrieve them, or no argument to retrieve all fields for all names"</span>
+      <span class="hljs-keyword">end</span>
+    <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p><code>#flat_json_fields</code> is just a utility method to DRY up the next two methods, because their code is almost exactly the same,
 it is not intended for use directly and might be confusing.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">flat_json_fields</span><span class="p">(</span><span class="n">side</span> <span class="o">=</span> <span class="ss">:right</span><span class="p">)</span>
-      <span class="n">side_number</span> <span class="o">=</span> <span class="n">side</span> <span class="o">==</span> <span class="ss">:right</span> <span class="p">?</span> <span class="mi">1</span> <span class="p">:</span> <span class="mi">0</span>
 
-      <span class="n">json_fields</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="o">[]</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">memo</span><span class="p">,</span> <span class="p">(</span><span class="nb">name</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span><span class="o">|</span>
-        <span class="n">memo</span> <span class="o">+</span> <span class="n">fields</span><span class="o">.</span><span class="n">map</span> <span class="k">do</span> <span class="o">|</span><span class="n">field</span><span class="o">|</span>
-          <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">is_a?</span><span class="p">(</span><span class="no">Hash</span><span class="p">)</span>
-            <span class="n">field</span><span class="o">.</span><span class="n">to_a</span><span class="o">.</span><span class="n">first</span><span class="o">[</span><span class="n">side_number</span><span class="o">]</span> <span class="c1"># [name, method_name]</span>
-          <span class="k">else</span>
-            <span class="n">field</span>
-          <span class="k">end</span>
-        <span class="k">end</span>
-      <span class="k">end</span><span class="o">.</span><span class="n">uniq</span>
-    <span class="k">end</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-15'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-15">&#182;</a>
-        </div>
-        <p>We need a way to get a flat, uniq'ed list of all the fields accross all field sets. This is that.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">all_json_fields</span>
-      <span class="n">flat_json_fields</span><span class="p">(</span><span class="ss">:left</span><span class="p">)</span>
-    <span class="k">end</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-16'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-16">&#182;</a>
-        </div>
-        <p>We need a wya to get a flat, uniq'ed list of all the method names accross all field sets. This is that.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">all_json_methods</span>
-      <span class="n">flat_json_fields</span><span class="p">(</span><span class="ss">:right</span><span class="p">)</span>
-    <span class="k">end</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-17'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-17">&#182;</a>
-        </div>
-        <p>An easy way to save on GC is to use the same instance to turn an array of objects into hashes instead
-of instantiating a new object for every object in the array. Here is an example of it&rsquo;s usage:</p>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">def</span> </span>flat_json_fields(side = <span class="hljs-symbol">:right</span>)
+      side_number = side == <span class="hljs-symbol">:right</span> ? <span class="hljs-number">1</span> <span class="hljs-symbol">:</span> <span class="hljs-number">0</span>
 
+      json_fields.reduce([]) <span class="hljs-keyword">do</span> |memo, (name, fields)|
+        memo + fields.map <span class="hljs-keyword">do</span> |field|
+          <span class="hljs-keyword">if</span> field.is_a?(<span class="hljs-constant">Hash</span>)
+            field.to_a.first[side_number] <span class="hljs-comment"># [name, method_name]</span>
+          <span class="hljs-keyword">else</span>
+            field
+          <span class="hljs-keyword">end</span>
+        <span class="hljs-keyword">end</span>
+      <span class="hljs-keyword">end</span>.uniq
+    <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>We need a way to get a flat, uniq&#39;ed list of all the fields accross all field sets. This is that.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">def</span> </span>all_json_fields
+      flat_json_fields(<span class="hljs-symbol">:left</span>)
+    <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>We need a wya to get a flat, uniq&#39;ed list of all the method names accross all field sets. This is that.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">def</span> </span>all_json_methods
+      flat_json_fields(<span class="hljs-symbol">:right</span>)
+    <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>An easy way to save on GC is to use the same instance to turn an array of objects into hashes instead
+of instantiating a new object for every object in the array. Here is an example of it&#39;s usage:</p>
 <pre><code>class BookRep
   initialize_with :book_model
   fields :title =&gt; :default
   forward :title =&gt; :book_model
 end
 
-BookRep.shared(:book_model =&gt; Book.first).to_hash # =&gt; { :title =&gt; "Moby Dick" }
-BookRep.shared(:book_model =&gt; Book.last).to_hash  # =&gt; { :title =&gt; "Lost Horizon" }
-</code></pre>
-
-<p>This should terrify you. If it doesn&rsquo;t, then this example will:</p>
-
+BookRep.shared(:book_model =&gt; Book.first).to_hash # =&gt; { :title =&gt; &quot;Moby Dick&quot; }
+BookRep.shared(:book_model =&gt; Book.last).to_hash  # =&gt; { :title =&gt; &quot;Lost Horizon&quot; }
+</code></pre><p>This should terrify you. If it doesn&#39;t, then this example will:</p>
 <pre><code>book1 = BookRep.shared(:book_model =&gt; Book.first)
 book2 = BookRep.shared(:book_model =&gt; Book.last)
 
 boo1.object_id === book2.object_id # =&gt; true
-</code></pre>
+</code></pre><p><strong>It really is a shared object.</strong></p>
+<p>You really shouldn&#39;t use this method directly for anything.</p>
 
-<p><strong>It really is a shared object.</strong></p>
-
-<p>You really shouldn&rsquo;t use this method directly for anything.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">shared</span><span class="p">(</span><span class="n">opts</span> <span class="o">=</span> <span class="p">{})</span>
-      <span class="vi">@pointer</span> <span class="o">=</span> <span class="p">(</span><span class="no">Thread</span><span class="o">.</span><span class="n">current</span><span class="o">[</span><span class="ss">:rep_shared_instances</span><span class="o">]</span> <span class="o">||=</span> <span class="p">{})</span>
-      <span class="vi">@pointer</span><span class="o">[</span><span class="nb">object_id</span><span class="o">]</span> <span class="o">||=</span> <span class="kp">new</span>
-      <span class="vi">@pointer</span><span class="o">[</span><span class="nb">object_id</span><span class="o">].</span><span class="n">reset_for_json!</span>
-      <span class="vi">@pointer</span><span class="o">[</span><span class="nb">object_id</span><span class="o">].</span><span class="n">parse_opts</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
-      <span class="vi">@pointer</span><span class="o">[</span><span class="nb">object_id</span><span class="o">]</span>
-    <span class="k">end</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-18'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-18">&#182;</a>
-        </div>
-        <p>The fanciest thing in this entire library is this <code>#to_proc</code> method. Here is an example of it&rsquo;s usage:</p>
-
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">def</span> </span>shared(opts = {})
+      <span class="hljs-variable">@pointer</span> = (<span class="hljs-constant">Thread</span>.current[<span class="hljs-symbol">:rep_shared_instances</span>] ||= {})
+      <span class="hljs-variable">@pointer</span>[object_id] ||= new
+      <span class="hljs-variable">@pointer</span>[object_id].reset_for_json!
+      <span class="hljs-variable">@pointer</span>[object_id].parse_opts(opts)
+      <span class="hljs-variable">@pointer</span>[object_id]
+    <span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>The fanciest thing in this entire library is this <code>#to_proc</code> method. Here is an example of it&#39;s usage:</p>
 <pre><code>class BookRep
   initialize_with :book_model
   fields :title =&gt; :default
   forward :title =&gt; :book_model
 end
 
-Book.all.map(&amp;BookRep) # =&gt; [{ :title =&gt; "Moby Dick" }, { :title =&gt; "Lost Horizon " }]
-</code></pre>
-
-<p>And now I will explain how it works. Any object can have a to_proc method and when you call <code>#map</code> on an
-array and hand it a proc it will in turn hand each object as an argument to that proc. What I&rsquo;ve decided
+Book.all.map(&amp;BookRep) # =&gt; [{ :title =&gt; &quot;Moby Dick&quot; }, { :title =&gt; &quot;Lost Horizon &quot; }]
+</code></pre><p>And now I will explain how it works. Any object can have a to_proc method and when you call <code>#map</code> on an
+array and hand it a proc it will in turn hand each object as an argument to that proc. What I&#39;ve decided
 to do with this object is use it the options for a shared instance to make a hash.</p>
-
 <p>Since I know the different initialization argumants from a call to <code>initialize_with</code>, I can infer by order
 which object is which option. Then I can create a Hash to give to <code>parse_opts</code> through the <code>shared</code> method.
 I hope that makes sense.</p>
-
 <p>It allows for extremely clean Rails controllers like this:</p>
-
 <pre><code>class PhotosController &lt; ApplicationController
   respond_to :json, :html
 
@@ -452,27 +478,22 @@ I hope that makes sense.</p>
   end
 end
 </code></pre>
-
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">to_proc</span>
-      <span class="nb">proc</span> <span class="p">{</span> <span class="o">|</span><span class="n">obj</span><span class="o">|</span>
-        <span class="n">arr</span> <span class="o">=</span> <span class="o">[</span><span class="n">obj</span><span class="o">].</span><span class="n">flatten</span>
-        <span class="n">init_args</span> <span class="o">=</span> <span class="vi">@initializiation_args</span><span class="o">[</span><span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">length</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">]</span>
-        <span class="n">opts</span> <span class="o">=</span> <span class="no">Hash</span><span class="o">[</span><span class="n">init_args</span><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span><span class="o">]</span>
-        <span class="n">shared</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span><span class="o">.</span><span class="n">to_hash</span>
-      <span class="p">}</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-
-  <span class="k">module</span> <span class="nn">HashieSupport</span>
-    <span class="k">def</span> <span class="nf">to_hash</span><span class="p">(</span><span class="nb">name</span> <span class="o">=</span> <span class="ss">:default</span><span class="p">)</span>
-      <span class="no">Hashie</span><span class="o">::</span><span class="no">Mash</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="k">super</span><span class="p">)</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span></pre></div>
-      </td>
-    </tr>
-  </table>
-</div>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-function"><span class="hljs-keyword">def</span> </span>to_proc
+      proc { |obj|
+        arr = [obj].flatten
+        init_args = <span class="hljs-variable">@initializiation_args</span>[<span class="hljs-number">0</span>..(arr.length-<span class="hljs-number">1</span>)]
+        opts = <span class="hljs-constant">Hash</span>[init_args.zip(arr)]
+        shared(opts).to_hash
+      }
+    <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">end</span>
+<span class="hljs-keyword">end</span></pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
 </body>
+</html>

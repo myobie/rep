@@ -1,5 +1,5 @@
 git checkout gh-pages
-git checkout master --docs
+git checkout master -- docs
 mv docs/* ./
 rm -rf docs
 git add .
