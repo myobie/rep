@@ -89,6 +89,10 @@ module Rep
     end
   end
 
+  def to_mash(name = :default)
+    Mashed::Mash.new(to_hash(name))
+  end
+
   def to_json
     JSON.generate(to_hash)
   end
@@ -296,12 +300,6 @@ module Rep
         opts = Hash[init_args.zip(arr)]
         shared(opts).to_hash
       }
-    end
-  end
-
-  module MashedSupport
-    def to_hash(name = :default)
-      Mashed::Mash.new(super)
     end
   end
 end
