@@ -25,6 +25,7 @@ require 'forwardable'
 # `JSON::generate` and `JSON::decode` are much safer to use than `Object#to_json`.
 
 require 'json'
+require 'mashed'
 
 require 'rep/version'
 module Rep
@@ -45,10 +46,6 @@ module Rep
         unless defined?(fields)
           alias fields json_fields
         end
-      end
-
-      if defined?(Mashed)
-        include MashedSupport
       end
     }
   end
