@@ -130,18 +130,6 @@ class ProjectReport
 end
 ```
 
-### Hashie
-
-If you have the hashie gem in your project, `#to_hash` returns a `Hashie::Mash` instance.
-
-```ruby
-UserRep.new(user: User.first).to_hash.class # => Hashie::Mash
-
-# which lets you do the dot accessors for things
-@user = UserRep.new(user: User.first).to_hash
-@user.name # => "Nathan Herald"
-```
-
 ### Rails
 
 A possible controller
