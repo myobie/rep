@@ -77,9 +77,9 @@ module Rep
     if fields = self.class.json_fields(name)
       fields.each_with_object({}) do |field, memo|
         field_name, method_name = field.is_a?(Hash) ? field.to_a.first : [field, field]
-        begin
+        if self.respond_to?(method_name)
           memo[field_name] = send(method_name)
-        rescue NoMethodError => e
+        else
           message = "There is no method named '#{method_name}' for the class '#{self.class}' for the '#{name}' list of fields : #{e.message}"
           raise NoMethodError.new(message, method_name, e.args)
         end
