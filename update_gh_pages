@@ -5,5 +5,4 @@ rm -rf docs
 git add .
 git add -u .
 git commit -am "Updated docs"
-git checkout master
 
