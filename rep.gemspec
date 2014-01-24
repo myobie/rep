@@ -17,7 +17,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
-  gem.add_dependency 'mashed', '>= 0.5.1'
+  gem.add_dependency 'mashed', '>= 0.9.0'
 
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'minitest'
