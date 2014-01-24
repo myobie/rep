@@ -75,7 +75,7 @@ module Rep
 
   def to_hash(name = :default)
     if fields = self.class.json_fields(name)
-      fields.reduce({}) do |memo, field|
+      fields.each_with_object({}) do |field, memo|
         field_name, method_name = field.is_a?(Hash) ? field.to_a.first : [field, field]
         begin
           memo[field_name] = send(method_name)
@@ -83,7 +83,6 @@ module Rep
           message = "There is no method named '#{method_name}' for the class '#{self.class}' for the '#{name}' list of fields : #{e.message}"
           raise NoMethodError.new(message, method_name, e.args)
         end
-        memo
       end
     else
       raise "There are no json fields under the name: #{name}"
