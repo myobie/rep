@@ -89,7 +89,7 @@ module Rep
           memo[field_name] = send(method_name)
         else
           message = "There is no method named '#{method_name}' for the class '#{self.class}' for the '#{name}' list of fields : #{e.message}"
-          raise NoMethodError.new(message, method_name, e.args)
+          raise NoMethodError.new(message, method_name)
         end
       end
     else
