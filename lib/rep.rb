@@ -71,7 +71,18 @@ module Rep
   # if there are no json fields setup for the particular set (which defaults to `:default`).
 
   def to_hash(name = :default)
-    if fields = self.class.json_fields(name)
+    fields = if name.is_a?(Hash)
+      hash = name
+      if hash.keys.include?(:fields)
+        fields = hash[:fields]
+      else
+        raise "Argument must be either `fields: [...]` or `:symbol`"
+      end
+    else
+      self.class.json_fields(name)
+    end
+
+    if fields
       fields.each_with_object({}) do |field, memo|
         field_name, method_name = field.is_a?(Hash) ? field.to_a.first : [field, field]
         if self.respond_to?(method_name)

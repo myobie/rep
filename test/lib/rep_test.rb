@@ -94,6 +94,16 @@ describe Rep do
     klass.new.to_hash.must_equal :one => 1, :two => 2, :three => 3
   end
 
+  it "should allow a fields override in to_hash" do
+    klass = new_rep_class do
+      fields [:one, :two, :three] => :default
+      def one; 1; end
+      def two; raise("shouldn't call me at all"); end
+      def three; 3; end
+    end
+    klass.new.to_hash(fields: [:one, :three]).must_equal :one => 1, :three => 3
+  end
+
   it "should send fields to instance to make json" do
     klass = new_rep_class do
       fields [:one, :two, :three] => :default
