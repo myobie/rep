@@ -21,6 +21,7 @@
 #     A.new([1,2,3]).first  # => 1
 
 require 'forwardable'
+require 'thread'
 
 # `JSON::generate` and `JSON::decode` are much safer to use than `Object#to_json`.
 
@@ -260,11 +261,14 @@ module Rep
     # You really shouldn't use this method directly for anything.
 
     def shared(opts = {})
-      @pointer = (Thread.current[:rep_shared_instances] ||= {})
-      @pointer[object_id] ||= new
-      @pointer[object_id].reset_for_json!
-      @pointer[object_id].parse_opts(opts)
-      @pointer[object_id]
+      @mutex ||= Mutex.new
+      @mutex.synchronize do
+        @pointer = (Thread.current[:rep_shared_instances] ||= {})
+        @pointer[object_id] ||= new
+        @pointer[object_id].reset_for_json!
+        @pointer[object_id].parse_opts(opts)
+        @pointer[object_id]
+      end
     end
 
     # The fanciest thing in this entire library is this `#to_proc` method. Here is an example of it's usage:
